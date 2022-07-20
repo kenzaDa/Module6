@@ -11,34 +11,25 @@
 
 <br>
 <div class="table-responsive">
-  <table class="table" >
-  <thead>
-    <tr>
-      
-      <th scope="col">Identifiant</th>
-      <th scope="col">Titre</th>
-      <th scope="col">Contenu</th>
- 
 
-      
-    </tr>
-  </thead>
-  <tbody>
   {% for article in articles %}
-    <tr>
+
          
-     <th scope="row"> {{article.id}}</th>
-     <th scope="row"> {{article.title}}</th>
-      
-     <th scope="row">{{article.body}}</th>  
-        
-        
-     
-  
+   <h2>Article n°{{article.id}}</h2><br>
+   <h5>Titre de l'article :{{article.title}}</h5><br>
+   <h5>Contenu :{{article.body}}</h5><br>
+    <a href="{{path('app_delete')}}" class="button">Supprimer</a>
+   {% for commentaire in commentaires %}
+      {% if commentaire.postId == article.id %}
+      <h6>commentaire n°:{{commentaire.id}}<br></h6>
+      <h6>contenu du commentaire  :{{commentaire.body}}<br></h6>
+      <h6>nom  :{{commentaire.name}}<br></h6>
+      <h6>mail  :{{commentaire.email}}<br></h6>
+     {% endif %} 
+   {% endfor %}   
     
-    {% endfor %} 
-  </tbody> 
- </table>
+ {% endfor %} 
+
  </div>
 </div>
 </div>
