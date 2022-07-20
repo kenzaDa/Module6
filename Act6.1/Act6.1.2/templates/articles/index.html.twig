@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ArticlesController!{% endblock %}
+
+{% block body %}
+
+<div class="container" >
+
+<h1>Liste des articles</h1>
+<br>
+
+<br>
+<div class="table-responsive">
+  <table class="table" >
+  <thead>
+    <tr>
+      
+      <th scope="col">Identifiant</th>
+      <th scope="col">Titre</th>
+      <th scope="col">Contenu</th>
+ 
+
+      
+    </tr>
+  </thead>
+  <tbody>
+  {% for article in articles %}
+    <tr>
+         
+     <th scope="row"> {{article.id}}</th>
+     <th scope="row"> {{article.title}}</th>
+      
+     <th scope="row">{{article.body}}</th>  
+        
+        
+     
+  
+    
+    {% endfor %} 
+  </tbody> 
+ </table>
+ </div>
+</div>
+</div>
+ 
+
+ 
+{% endblock %}
