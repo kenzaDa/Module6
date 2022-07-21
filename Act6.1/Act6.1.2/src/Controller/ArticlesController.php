@@ -6,27 +6,30 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use GuzzleHttp\Client;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 class ArticlesController extends AbstractController
-{
+
+
+{    public function __construct(HttpClientInterface $client)
+    {
+        $this->client = $client;
+    }
     /**
-     * @Route("/articles", name="app_articles")
+     * @Route("/article", name="app_articles")
      */
     public function index(): Response
     {
-        $client = new Client(['base_uri' => 'https://jsonplaceholder.typicode.com/']);
-    $response = $client->request('GET', '/posts');
+        $client = new Client(['base_uri' => 'http://127.0.0.1:8000']);
+    $response = $client->request('GET', '/articles');
     $body = $response->getBody();
     $articles = json_decode($body);
 
 
-    
-    $response = $client->request('GET', '/comments');
-    $body = $response->getBody();
-    $commentaires = json_decode($body);
+
  
         return $this->render('articles/index.html.twig', [
             'controller_name' => 'ArticlesController',
-                'articles' => $articles ,'commentaires' => $commentaires
+                'articles' => $articles 
         ]);
     }
 
@@ -36,45 +39,53 @@ class ArticlesController extends AbstractController
 /**
      * @Route("/addArticle", name="app_add")
      */
-    public function AddArticle()
-    { $client = new Client();
-        $response = $client->request('POST', 'https://jsonplaceholder.typicode.com/posts', [
-            'form_params' => [
-                'userId' => '1',
-                'id' => '101',
-                'title' => 'titre de cet article ajoute',
-                'body' => 'contenu ajouté',
+    public function addArticle():Response
+    {
+        $response=$this->client->request('POST','http://127.0.0.1:8000/article',[
+                'json' => ['titre' => 'nouveau titre  ',
+                            'contenu' => 'nouveau contenu ',
+                            'auteur' => 'auteur',
+                            'dateDePublication' =>  '2022-07-21 10:18:15'
                 ]
-        ]);
-        $body=$response->getBody();
-       
-        $code=$response->getStatusCode() ;
-        $reasonPhrase = $response->getReasonPhrase(); // OK
-     
-    return $this->render('articles/message.html.twig', [
-                    'controller_name' => 'ArticlesController',
-                    'code'=>$code ,
-                    'body'=>$body,
-                    'reasonPhrase'=>$reasonPhrase
-            ]);
-    } 
+            ]
+             );
+             
+      
+         
+          
+            
+        return $this->json(["message" => "article ajoute"],201);
+        
+    }
+/**
+     * @Route("/ModifArticle", name="app_modif")
+     */
+    public function ModifArticle()
 
+    {   
+        $response=$this->client->request('PUT','http://127.0.0.1:8000/article/23',[
+        'json' => ['titre' => ' titre modifie ',
+                    'contenu' => ' contenu modifie ',
+                    'auteur' => 'auteur',
+                    'dateDePublication' =>  '2022-07-21 10:18:15'
+        ]
+    ]
+     );
+     $content = $response->toArray();
+
+    
+     return $this->json(["message" => "article modifie"],200);
+    } 
     
      /**
      * @Route("/delete", name="app_delete")
      */
     public function DeleteArticle()
-     {
-        $client = new Client();
-        $response =$client->delete('https://jsonplaceholder.typicode.com/posts/1');
-        $code=$response->getStatusCode() ;
-        $reason = $response->getReasonPhrase(); // OK
-            return $this->render('articles/message.html.twig', [
-                    'controller_name' => 'ArticlesController',
-                    'code'=>$code ,
-                    'reasonPhrase'=>$reason,
-                    'body'=>''
-            ]);
+     {  if (isset($_GET['id'])) {
+     $this->client->request('DELETE','http://127.0.0.1:8000/article/'.$_GET['id']);
+     }return $this->json(["message" => "article supprime"],200);
+     
+        
     }
 }
 

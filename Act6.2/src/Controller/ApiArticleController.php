@@ -93,7 +93,7 @@ public function addArticle(Request $request, SerializerInterface $serializer,Ent
 
   /**
 
-     * @Put("/article/edit/{id?}", name="edit")
+     * @Put("/article/{id?}", name="edit")
 
      */
 
