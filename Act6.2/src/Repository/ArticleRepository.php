@@ -47,6 +47,24 @@ class ArticleRepository extends ServiceEntityRepository
         }
     }
 
+
+    /**
+ * @return Article[] Returns an array of Articles objects
+*/
+public function apiFindAll() : array
+{  
+    $limit = 3;
+    $qb = $this->createQueryBuilder('a')
+        ->select('a.id', 'a.titre', 'a.contenu')
+        ->orderBy('a.date_de_publication', 'DESC')
+        ->setMaxResults( $limit );
+    $query = $qb->getQuery();
+
+    return $query->execute();
+}
+
+
+
     // /**
     //  * @return Article[] Returns an array of Article objects
     //  */
