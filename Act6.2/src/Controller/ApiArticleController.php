@@ -57,19 +57,19 @@ class ApiArticleController extends AbstractController
      *     requirements = {"id"="\d+"}
      * )
      */
-public function getArticle(Article $article)
-{
-    $encoders = [new JsonEncoder()];
-    $normalizers = [new ObjectNormalizer()];
-    $serializer = new Serializer($normalizers, $encoders);
-    $jsonContent = $serializer->serialize($article, 'json', [
-        'circular_reference_handler' => function ($object) {
-            return $object->getId();
-        }
-    ]);
-    $response = new Response($jsonContent);
-    $response->headers->set('Content-Type', 'application/json');
-    return $response;
+public function getArticle(Article $articles, ArticleRepository $articlesRepo,$id)
+{$articles = $articlesRepo
+    ->find($id);
+    $serializer = new Serializer(array(new DateTimeNormalizer('d.m.Y'), new GetSetMethodNormalizer()), array('json' => new JsonEncoder()));
+    $data = $serializer->serialize($articles, 'json');
+       // On instancie la réponse
+       $response = new Response($data);
+
+       // On ajoute l'entête HTTP
+       $response->headers->set('Content-Type', 'application/json');
+   
+       // On envoie la réponse
+       return $response;
 }
 
 
