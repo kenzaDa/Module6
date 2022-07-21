@@ -8,9 +8,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Controller\Annotations\Get;
 use App\Repository\ArticleRepository;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+
 
 
 
@@ -27,39 +31,32 @@ class ApiArticleController extends AbstractController
     }
     
   /**
-     * @Route("/articles", name="article_list")
+     * @GET("/articles", name="article_list")
      */
-    public function listAction(ArticleRepository $articlesRepo)
+    public function listAction(ArticleRepository $articlesRepo): Response
     {
-        $articles = $articlesRepo->findAll();
-      // On spécifie qu'on utilise l'encodeur JSON
-    $encoders = [new JsonEncoder()];
 
-    // On instancie le "normaliseur" pour convertir la collection en tableau
-    $normalizers = [new ObjectNormalizer()];
+    $articles = $articlesRepo->findAll();
+    $serializer = new Serializer(array(new DateTimeNormalizer('d.m.Y'), new GetSetMethodNormalizer()), array('json' => new JsonEncoder()));
+    $data = $serializer->serialize($articles, 'json');
+       // On instancie la réponse
+       $response = new Response($data);
 
-    // On instancie le convertisseur
-    $serializer = new Serializer($normalizers, $encoders);
+       // On ajoute l'entête HTTP
+       $response->headers->set('Content-Type', 'application/json');
+   
+       // On envoie la réponse
+       return $response;
+  }
 
-    // On convertit en json
-    $jsonContent = $serializer->serialize($articles, 'json', [
-        'circular_reference_handler' => function ($object) {
-            return $object->getId();
-        }
-    ]);
 
-    // On instancie la réponse
-    $response = new Response($jsonContent);
-
-    // On ajoute l'entête HTTP
-    $response->headers->set('Content-Type', 'application/json');
-
-    // On envoie la réponse
-    return $response;
-}
 /**
- * @Route("/article/{id}", name="article", methods={"GET"})
- */
+     * @Get(
+     *     path = "/article/{id}",
+     *     name = "app_article_show",
+     *     requirements = {"id"="\d+"}
+     * )
+     */
 public function getArticle(Article $article)
 {
     $encoders = [new JsonEncoder()];
@@ -76,5 +73,6 @@ public function getArticle(Article $article)
 }
 
 
+    
     }
 
