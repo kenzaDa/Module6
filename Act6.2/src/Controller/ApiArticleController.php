@@ -7,13 +7,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\Controller\Annotations\Post;
 use App\Repository\ArticleRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+
 
 
 
@@ -58,7 +62,8 @@ class ApiArticleController extends AbstractController
      * )
      */
 public function getArticle(Article $articles, ArticleRepository $articlesRepo,$id)
-{$articles = $articlesRepo
+{
+    $articles = $articlesRepo
     ->find($id);
     $serializer = new Serializer(array(new DateTimeNormalizer('d.m.Y'), new GetSetMethodNormalizer()), array('json' => new JsonEncoder()));
     $data = $serializer->serialize($articles, 'json');
@@ -72,7 +77,17 @@ public function getArticle(Article $articles, ArticleRepository $articlesRepo,$i
        return $response;
 }
 
-
+/**
+ * @POST("/article", name="ajout")
+ */
+public function addArticle(Request $request, SerializerInterface $serializer,EntityManagerInterface $em)
+{
+    $jsonRecu=$request->getContent();
+    $article=$serializer->deserialize($jsonRecu, Article::class,'json');
+    $em->persist($article);
+    $em->flush();
+    return $this->json($article,201,[]);
+}
     
     }
 
