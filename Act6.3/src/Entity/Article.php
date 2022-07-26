@@ -3,7 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+
+
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
@@ -19,11 +22,13 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"articles"})
      */
     private $titre;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"articles"})
      */
     private $contenu;
 

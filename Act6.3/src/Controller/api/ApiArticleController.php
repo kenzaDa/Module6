@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\api;
 
 use App\Entity\Article;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,6 +10,7 @@ use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\Annotations\Post;
 use FOS\RestBundle\Controller\Annotations\Put;
 use FOS\RestBundle\Controller\Annotations\Delete;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,56 +20,57 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use JMS\Serializer\SerializationContext;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
+use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
 
 
 
 
+/**
+ * @package App\Controller
+ * /**
+ * @Rest\Route("/api/article")
+ */
 
 class ApiArticleController extends AbstractController
 {
-    /**
-     * @Route("/api/article", name="app_api_article")
-     */
-    public function index(): Response
-    {
-        return $this->render('api_article/index.html.twig', [
-            'controller_name' => 'ApiArticleController',
-        ]);
-    }
     
   /**
-     * @GET("/articles", name="article_list")
+     ** @Rest\Get("/")
      */
-    public function listAction(ArticleRepository $articlesRepo): Response
+    public function listAction(ArticleRepository $articlesRepo)
     {
-
+    $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
     $articles = $articlesRepo->findAll();
-    $serializer = new Serializer(array(new DateTimeNormalizer('d.m.Y'), new GetSetMethodNormalizer()), array('json' => new JsonEncoder()));
-    $data = $serializer->serialize($articles, 'json');
+    $serializer = new Serializer(array(new DateTimeNormalizer('d.m.Y'), new GetSetMethodNormalizer($classMetadataFactory)), array('json' => new JsonEncoder()));
+    $data = $serializer->serialize($articles, 'json',['groups'=>'articles']);
        // On instancie la réponse
-       $response = new Response($data);
+    $response = new Response($data);
 
        // On ajoute l'entête HTTP
-       $response->headers->set('Content-Type', 'application/json');
-   
+    $response->headers->set('Content-Type', 'application/json');
+    //  $response=$this->json($articles,200,[],['groups'=>'articles']);
        // On envoie la réponse
        return $response;
   }
 
 
 /**
-     * @Get(
-     *     path = "/api/article/{id}",
+     *@Get(
+     *     path = "/{id}",
      *     name = "app_article_show",
      *     requirements = {"id"="\d+"}
      * )
      */
 public function getArticle(Article $articles, ArticleRepository $articlesRepo,$id)
-{
+{   
+    $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
     $articles = $articlesRepo
     ->find($id);
-    $serializer = new Serializer(array(new DateTimeNormalizer('d.m.Y'), new GetSetMethodNormalizer()), array('json' => new JsonEncoder()));
-    $data = $serializer->serialize($articles, 'json');
+    $serializer = new Serializer(array(new DateTimeNormalizer('d.m.Y'), new GetSetMethodNormalizer($classMetadataFactory)), array('json' => new JsonEncoder()));
+    $data = $serializer->serialize($articles, 'json',['groups'=>'articles']);
        // On instancie la réponse
        $response = new Response($data);
 
@@ -80,7 +82,7 @@ public function getArticle(Article $articles, ArticleRepository $articlesRepo,$i
 }
 
 /**
- * @POST("/api/article", name="ajout")
+ * @POST("/", name="ajout")
  */
 public function addArticle(Request $request, SerializerInterface $serializer,EntityManagerInterface $em)
 {
@@ -93,7 +95,7 @@ public function addArticle(Request $request, SerializerInterface $serializer,Ent
 
   /**
 
-     * @Put("/api/article/{id?}", name="edit")
+     *@Put("/{id?}", name="edit")
 
      */
 
@@ -133,7 +135,7 @@ public function addArticle(Request $request, SerializerInterface $serializer,Ent
   /**
      * @GET("/api/lastarticle", name="article_list_three")
      */
-    public function last3Articles(ArticleRepository $articlesRepo): Response
+    public function lastArticles(ArticleRepository $articlesRepo): Response
     {
 
     $articles = $articlesRepo->apiFindAll();
@@ -150,17 +152,16 @@ public function addArticle(Request $request, SerializerInterface $serializer,Ent
   }
 
   /**
- * @DELETE("/api/article/{id}", name="supprime")
+ *@DELETE("/{id}", name="supprime")
  */
-public function removeArticle(Article $article ,EntityManagerInterface $em)
-{ if (!$article) {
-    return $this->json(["error message" => "article not found"],404);
-  } else {
-    $em ->remove($article);
-    $em->flush();
-    return new Response('ok');
+public function removeArticle(ArticleRepository $articleRepository,EntityManagerInterface $em,$id):Response
+{
+  $article = $articleRepository->find($id);
+  if(!$article){
+      return $this->json(["error message" => "article introuvable"],404);
   }
-    
-
-    }}
+  $em->remove($article);
+  $em->flush();
+  return $this->json(["message" => "article supprime avec succès"]);
+}}
 
