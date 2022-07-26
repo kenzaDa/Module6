@@ -37,7 +37,7 @@ class ApiArticleController extends AbstractController
     }
     
   /**
-     * @GET("/articles", name="article_list")
+     * @GET("/api/articles", name="article_list")
      */
     public function listAction(ArticleRepository $articlesRepo): Response
     {
@@ -58,7 +58,7 @@ class ApiArticleController extends AbstractController
 
 /**
      * @Get(
-     *     path = "/article/{id}",
+     *     path = "/api/article/{id}",
      *     name = "app_article_show",
      *     requirements = {"id"="\d+"}
      * )
@@ -80,7 +80,7 @@ public function getArticle(Article $articles, ArticleRepository $articlesRepo,$i
 }
 
 /**
- * @POST("/article", name="ajout")
+ * @POST("/api/article", name="ajout")
  */
 public function addArticle(Request $request, SerializerInterface $serializer,EntityManagerInterface $em)
 {
@@ -93,7 +93,7 @@ public function addArticle(Request $request, SerializerInterface $serializer,Ent
 
   /**
 
-     * @Put("/article/{id?}", name="edit")
+     * @Put("/api/article/{id?}", name="edit")
 
      */
 
@@ -131,7 +131,7 @@ public function addArticle(Request $request, SerializerInterface $serializer,Ent
 
     }
   /**
-     * @GET("/lastarticle", name="article_list_three")
+     * @GET("/api/lastarticle", name="article_list_three")
      */
     public function last3Articles(ArticleRepository $articlesRepo): Response
     {
@@ -150,7 +150,7 @@ public function addArticle(Request $request, SerializerInterface $serializer,Ent
   }
 
   /**
- * @DELETE("/article/{id}", name="supprime")
+ * @DELETE("/api/article/{id}", name="supprime")
  */
 public function removeArticle(Article $article ,EntityManagerInterface $em)
 { if (!$article) {
