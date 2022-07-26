@@ -37,7 +37,7 @@ class ApiArticleController extends AbstractController
     }
     
   /**
-     * @GET("/api/articles", name="article_list")
+     * @GET("/articles", name="article_list")
      */
     public function listAction(ArticleRepository $articlesRepo): Response
     {
