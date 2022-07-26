@@ -30,15 +30,13 @@ use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
 
 /**
  * @package App\Controller
- * /**
- * @Rest\Route("/api/article")
  */
 
 class ApiArticleController extends AbstractController
 {
     
   /**
-     ** @Rest\Get("/")
+     ** @Get("/articles")
      */
     public function listAction(ArticleRepository $articlesRepo)
     {
@@ -59,7 +57,7 @@ class ApiArticleController extends AbstractController
 
 /**
      *@Get(
-     *     path = "/{id}",
+     *     path = "/api/article/{id}",
      *     name = "app_article_show",
      *     requirements = {"id"="\d+"}
      * )
@@ -82,7 +80,7 @@ public function getArticle(Article $articles, ArticleRepository $articlesRepo,$i
 }
 
 /**
- * @POST("/", name="ajout")
+ * @POST("/api/article", name="ajout")
  */
 public function addArticle(Request $request, SerializerInterface $serializer,EntityManagerInterface $em)
 {
@@ -95,7 +93,7 @@ public function addArticle(Request $request, SerializerInterface $serializer,Ent
 
   /**
 
-     *@Put("/{id?}", name="edit")
+     *@Put("/api/article/{id?}", name="edit")
 
      */
 
@@ -152,7 +150,7 @@ public function addArticle(Request $request, SerializerInterface $serializer,Ent
   }
 
   /**
- *@DELETE("/{id}", name="supprime")
+ *@DELETE("/api/article/{id}", name="supprime")
  */
 public function removeArticle(ArticleRepository $articleRepository,EntityManagerInterface $em,$id):Response
 {

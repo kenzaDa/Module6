@@ -26,7 +26,7 @@ INSERT INTO `user`( `email`, `roles`, `password`) VALUES ('kenza@talan.com','["R
  
 pour générer le token : /api/login_check avec la methode POST et dans le body {"username":"kenza@talan.com","password":"kenza123"}
  
- -/articles avec la methode GET pour récuperer tous les articles
+ -/articles avec la methode GET pour récuperer tous les articles (route non sécurisée)
 
  - /api/article/{id} avec la methode GET pour récuperer  l'article avec id bien défini
 
