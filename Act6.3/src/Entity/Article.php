@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ArticleRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation as Serializer;
+
 use Doctrine\ORM\Mapping as ORM;
 
 
@@ -22,13 +24,13 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"articles"})
+     * @Serializer\Groups({"articles"})
      */
     private $titre;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"articles"})
+     * @Serializer\Groups({"articles"})
      */
     private $contenu;
 
@@ -39,6 +41,7 @@ class Article
 
     /**
      * @ORM\Column(type="datetime")
+     * @Serializer\Groups({"articles"})
      */
     private $date_de_publication;
 
